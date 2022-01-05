@@ -1,9 +1,11 @@
 const express = require('express');
 const Campsite = require('../modals/campsite');
 const campsiteRouter = express.Router();
+const cors = require('./cors');
 
 campsiteRouter.route('/')
-    .get((req, res, next) => {
+    .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+    .get(cors.cors, (req, res, next) => {
         Campsite.find()
             .then(campsites => {
                 res.statusCode = 200;
@@ -12,7 +14,7 @@ campsiteRouter.route('/')
             })
             .catch(err => next(err));
     })
-    .post((req, res, next) => {
+    .post(cors.corsWithOptions, (req, res, next) => {
         Campsite.create(req.body)
             .then(campsite => {
                 console.log('Campsite Created ', campsite);
@@ -22,11 +24,11 @@ campsiteRouter.route('/')
             })
             .catch(err => next(err));
     })
-    .put((req, res) => {
+    .put(cors.corsWithOptions, (req, res) => {
         res.statusCode = 403;
         res.end('PUT operation not supported on /campsites');
     })
-    .delete((req, res, next) => {
+    .delete(cors.corsWithOptions, (req, res, next) => {
         Campsite.deleteMany()
             .then(response => {
                 res.statusCode = 200;
